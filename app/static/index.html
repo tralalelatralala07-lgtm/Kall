@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Календарь праздников мира</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📅 Календарь праздников мира</h1>
+            <p>Праздники на каждый день из разных стран</p>
+        </header>
+
+        <div class="controls">
+            <select id="countrySelect"></select>
+            <input type="month" id="monthInput">
+            <button id="btnToday">Сегодня</button>
+        </div>
+
+        <div class="calendar" id="calendar"></div>
+
+        <div class="holiday-details" id="holidayDetails" style="display:none;">
+            <h2 id="detailDate"></h2>
+            <ul id="detailList"></ul>
+        </div>
+    </div>
+    <script src="/static/app.js"></script>
+</body>
+</html>
