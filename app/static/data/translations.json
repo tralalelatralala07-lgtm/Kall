@@ -1,0 +1,142 @@
+{
+  "RU": {
+    "New Year's Day": "Новый год",
+    "Orthodox Christmas Day": "Рождество Христово",
+    "Defender of the Fatherland Day": "День защитника Отечества",
+    "International Women's Day": "Международный женский день",
+    "Spring and Labour Day": "Праздник Весны и Труда",
+    "Victory Day": "День Победы",
+    "Russia Day": "День России",
+    "Unity Day": "День народного единства"
+  },
+  "UA": {
+    "New Year's Day": "Новий рік",
+    "Orthodox Christmas Day": "Різдво Христове",
+    "International Women's Day": "Міжнародний жіночий день",
+    "Labour Day": "День праці",
+    "Victory Day over Nazism in World War II": "День перемоги над нацизмом у Другій світовій війні",
+    "Constitution Day": "День Конституції",
+    "Ukrainian Statehood Day": "День Української Державності",
+    "Independence Day": "День Незалежності",
+    "Defender of Ukraine Day": "День захисників і захисниць України",
+    "Christmas Day": "Різдво Христове"
+  },
+  "BY": {
+    "New Year's Day": "Новыі год",
+    "Orthodox Christmas Day": "Раство Христова",
+    "Defender of the Fatherland Day": "День абаронcy Айчыны",
+    "International Women's Day": "Міжнародны жанскі дзень",
+    "Labour Day": "День працы",
+    "Victory Day": "День перамогі",
+    "Independence Day": "День неzalежнасці"
+  },
+  "PL": {
+    "New Year's Day": "Nowy Rok",
+    "Easter Monday": "Poniedziałek Wielkanocny",
+    "Labour Day": "Święto Pracy",
+    "Constitution Day": "Święto Konstytucji 3 Maja",
+    "Whit Sunday": "Zielone Świątki",
+    "Corpus Christi": "Boże Ciało",
+    "Assumption of the Blessed Virgin Mary": "Wniebowzięcie Najświętszej Maryi Panny",
+    "All Saints' Day": "Wszystkich Świętych",
+    "Independence Day": "Narodowe Święto Niepodległości",
+    "Christmas (25 December)": "Boże Narodzenie",
+    "Second Day of Christmastide": "Drugi dzień świąt Bożego Narodzenia"
+  },
+  "BG": {
+    "New Year's Day": "Нова година",
+    "Liberation Day": "Ден на освобождението на България от османско гнетство",
+    "International Women's Day": "Международен женски ден",
+    "Labour Day": "Ден на труда",
+    "St. George's Day": "Гергьовден",
+    "Day of Bulgarian Culture and Education Workers": "Ден на българската култура и просветен работник",
+    "Unification Day": "Ден на Съединението",
+    "Independence Day": "Ден на независимостта на България",
+    "Christmas Eve": "Бъдни вечер",
+    "Christmas": "Коледа"
+  },
+  "SR": {
+    "New Year's Day": "Нова година",
+    "Orthodox Christmas Day": "Божић",
+    "Statehood Day": "Дан државности Србије",
+    "International Workers' Day": "Дан Радника",
+    "Orthodox Easter": "Васкрс",
+    "Armistice Day": "Ден примирја",
+    "Christmas": "Божић"
+  },
+  "HR": {
+    "New Year's Day": "Nova godina",
+    "Epiphany": "Bogojavljenje",
+    "Easter Monday": "Uskrsni ponedjeljak",
+    "Labour Day": "Praznik rada",
+    "Corpus Christi": "Tijelovo",
+    "Anti-Fascist Struggle Day": "Dan antifašističke borbe",
+    "Statehood Day": "Dan državnosti",
+    "Homeland Thanksgiving Day": "Dan domovinske zahvalnosti",
+    "All Saints' Day": "Dan svih svetih",
+    "Christmas": "Božić"
+  },
+  "SI": {
+    "New Year's Day": "Novo leto",
+    "Prešeren Day": "Prešernov dan",
+    "Easter Monday": "Velikonočni ponedeljek",
+    "Labour Day": "Praznik dela",
+    "Statehood Day": "Dan državnosti",
+    "Assumption of Mary": "Marijino vnebovzetje",
+    "Reformation Day": "Dan reformacije",
+    "All Saints' Day": "Dan svih svetih",
+    "Christmas": "Božič"
+  },
+  "SK": {
+    "New Year's Day": "Nový rok",
+    "Epiphany": "Zjavenie Pána",
+    "Good Friday": "Veľký piatok",
+    "Easter Monday": "Veľkonočný pondelok",
+    "Labour Day": "Sviatok práce",
+    "Victory Day": "Deň víťazstva nad fašizmom",
+    "St. Cyril and Methodius Day": "Sviatí Cyril a Metod",
+    "Slovak National Uprising Anniversary": "Výročie Slovenského národného povstania",
+    "Constitution Day": "Deň Ústavy Slovenskej republiky",
+    "All Saints' Day": "Sviatok všetkých svätých",
+    "Christmas": "Vianoce"
+  },
+  "CZ": {
+    "New Year's Day": "Nový rok",
+    "Good Friday": "Velký pátek",
+    "Easter Monday": "Velikonoční pondělí",
+    "Labour Day": "Svátek práce",
+    "Liberation Day": "Den osvobození",
+    "St. Cyril and Methodius Day": "Den slovanských věrozvěstů Cyrila a Metoděje",
+    "Jan Hus Day": "Den upálení mistra Jana Husa",
+    "St. Wenceslas Day": "Den české státnosti",
+    "Independent Czechoslovak State Day": "Den vzniku samostatného československého státu",
+    "Struggle for Freedom and Democracy Day": "Den boje za svobodu a demokracii",
+    "Christmas": "Vánoce"
+  },
+  "MK": {
+    "New Year's Day": "Нова година",
+    "Orthodox Christmas Day": "Божик",
+    "Orthodox Easter": "Велигден",
+    "Labour Day": "Ден на трутот",
+    "Statehood Day": "Ден на државноста",
+    "Ilinden": "Илинден",
+    "Independence Day": "Ден на независнсоста",
+    "Christmas": "Божик"
+  },
+  "ME": {
+    "New Year's Day": "Нова година",
+    "Orthodox Christmas Day": "Божић",
+    "Orthodox Easter": "Васкрс",
+    "Labour Day": "Празник рада",
+    "Statehood Day": "Дан државности",
+    "Christmas": "Божић"
+  },
+  "BA": {
+    "New Year's Day": "Nova godina",
+    "Orthodox Christmas Day": "Божић",
+    "Independence Day": "Дан независнсости",
+    "Labour Day": "Празник рада",
+    "Statehood Day": "Дан државности",
+    "Christmas": "Божић"
+  }
+}

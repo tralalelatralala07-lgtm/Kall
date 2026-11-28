@@ -11,6 +11,7 @@ import httpx
 BASE_DIR = Path(__file__).resolve().parent
 STATIC_DIR = BASE_DIR / "static"
 FOLK_FILE = STATIC_DIR / "data" / "slavic-folk.json"
+TRANS_FILE = STATIC_DIR / "data" / "translations.json"
 
 NAGER = "https://date.nager.at/api/v3"
 KUZYAK = "https://calendar.kuzyak.in/api/calendar"
@@ -35,13 +36,29 @@ app = FastAPI(title="Календарь славянских празднико�
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 CALENDAR_CACHE: dict[tuple[str, int], list[dict]] = {}
+TRANSLATIONS: dict[str, dict[str, str]] = {}
+
+
+def load_json_file(path: Path, default):
+    if not path.exists():
+        return default
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
 
 
 def load_folk_holidays() -> list[dict]:
-    if not FOLK_FILE.exists():
-        return []
-    with open(FOLK_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
+    return load_json_file(FOLK_FILE, [])
+
+
+def load_translations() -> dict[str, dict[str, str]]:
+    return load_json_file(TRANS_FILE, {})
+
+
+def translate_holiday(country_code: str, name: str) -> str:
+    """Переводит название праздника на русский, если есть в словаре."""
+    cc = country_code.upper()
+    table = TRANSLATIONS.get(cc, {})
+    return table.get(name, name)
 
 
 async def fetch_json(client: httpx.AsyncClient, url: str):
@@ -132,6 +149,12 @@ async def get_ru_holidays(year: int) -> list[dict]:
     return holidays
 
 
+@app.on_event("startup")
+async def startup():
+    global TRANSLATIONS
+    TRANSLATIONS = load_translations()
+
+
 @app.get("/")
 async def index():
     return FileResponse(str(STATIC_DIR / "index.html"))
@@ -162,6 +185,10 @@ async def slavic_forward(
             for y in years:
                 result.extend(await get_nager_holidays(cc, y))
 
+        # Переводим названия на русский
+        for item in result:
+            item["name"] = translate_holiday(cc, item["name"])
+
         folk = load_folk_holidays()
         for h in folk:
             try:
@@ -171,7 +198,7 @@ async def slavic_forward(
             if start <= d <= end and (h.get("country", cc) == cc or h.get("country") == "ALL"):
                 result.append({
                     "date": h["date"],
-                    "name": h.get("name"),
+                    "name": translate_holiday(h.get("country", cc), h.get("name")),
                     "country": h.get("country", cc),
                     "type": "folk",
                     "source": "folk-json",
