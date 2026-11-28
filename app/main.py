@@ -1,87 +1,207 @@
-import os
-from datetime import date
-from fastapi import FastAPI, Query, HTTPException
+﻿import os
+import json
+import asyncio
+from datetime import date, timedelta
+from pathlib import Path
+from fastapi import FastAPI, Query
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 import httpx
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-STATIC_DIR = os.path.join(BASE_DIR, "static")
-NAGER_BASE = "https://date.nager.at/api/v3"
+BASE_DIR = Path(__file__).resolve().parent
+STATIC_DIR = BASE_DIR / "static"
+FOLK_FILE = STATIC_DIR / "data" / "slavic-folk.json"
 
-app = FastAPI(title="Календарь праздников мира")
+NAGER = "https://date.nager.at/api/v3"
+KUZYAK = "https://calendar.kuzyak.in/api/calendar"
 
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
-
-FALLBACK_COUNTRIES = [
-    {"code": "US", "name": "США"},
+SLAVIC_COUNTRIES = [
     {"code": "RU", "name": "Россия"},
-    {"code": "GB", "name": "Великобритания"},
-    {"code": "DE", "name": "Германия"},
-    {"code": "FR", "name": "Франция"},
-    {"code": "IT", "name": "Италия"},
-    {"code": "ES", "name": "Испания"},
-    {"code": "CA", "name": "Канада"},
-    {"code": "AU", "name": "Австралия"},
-    {"code": "JP", "name": "Япония"},
-    {"code": "CN", "name": "Китай"},
-    {"code": "IN", "name": "Индия"},
-    {"code": "BR", "name": "Бразилия"},
-    {"code": "MX", "name": "Мексика"},
-    {"code": "AR", "name": "Аргентина"},
+    {"code": "UA", "name": "Украина"},
+    {"code": "BY", "name": "Беларусь"},
+    {"code": "PL", "name": "Польша"},
+    {"code": "BG", "name": "Болгария"},
+    {"code": "SR", "name": "Сербия"},
+    {"code": "HR", "name": "Хорватия"},
+    {"code": "SI", "name": "Словения"},
+    {"code": "SK", "name": "Словакия"},
+    {"code": "CZ", "name": "Чехия"},
+    {"code": "MK", "name": "Северная Македония"},
+    {"code": "ME", "name": "Черногория"},
+    {"code": "BA", "name": "Босния и Герцеговина"},
 ]
+
+app = FastAPI(title="Календарь славянских праздников (открытые данные)")
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+
+CALENDAR_CACHE: dict[tuple[str, int], list[dict]] = {}
+
+
+def load_folk_holidays() -> list[dict]:
+    if not FOLK_FILE.exists():
+        return []
+    with open(FOLK_FILE, "r", encoding="utf-8") as f:
+        return json.load(f)
 
 
 async def fetch_json(client: httpx.AsyncClient, url: str):
-    try:
-        resp = await client.get(url, timeout=10.0)
-        resp.raise_for_status()
-        return resp.json()
-    except Exception as exc:
-        raise HTTPException(status_code=502, detail=f"Ошибка доступа к сервису праздников: {exc}")
+    resp = await client.get(url, timeout=15.0)
+    resp.raise_for_status()
+    return resp.json()
 
 
-async def get_holidays_data(country_code: str, year: int):
+async def get_nager_holidays(country_code: str, year: int) -> list[dict]:
     async with httpx.AsyncClient() as client:
-        return await fetch_json(
-            client, f"{NAGER_BASE}/PublicHolidays/{year}/{country_code.upper()}"
-        )
+        try:
+            data = await fetch_json(
+                client, f"{NAGER}/PublicHolidays/{year}/{country_code.upper()}"
+            )
+        except Exception:
+            return []
+    return [
+        {
+            "date": h["date"],
+            "name": h.get("localName") or h.get("name"),
+            "country": country_code.upper(),
+            "type": "state",
+            "source": "nager",
+        }
+        for h in data
+    ]
+
+
+sem = asyncio.Semaphore(25)
+
+
+async def fetch_kuzyak_day(client: httpx.AsyncClient, y: int, m: int, d: int):
+    async with sem:
+        try:
+            data = await fetch_json(
+                client, f"{KUZYAK}/{y}/{m:02d}/{d:02d}"
+            )
+            if data.get("holiday"):
+                return {
+                    "date": data["date"][:10],
+                    "name": data["holiday"],
+                    "country": "RU",
+                    "type": "state",
+                    "source": "kuzyak",
+                    "isWorkingDay": data.get("isWorkingDay", True),
+                    "isShortDay": data.get("isShortDay", False),
+                }
+        except Exception:
+            pass
+        return None
+
+
+async def get_ru_holidays_from_kuzyak(year: int) -> list[dict]:
+    start = date(year, 1, 1)
+    end = date(year, 12, 31)
+    results: list[dict] = []
+
+    async with httpx.AsyncClient() as client:
+        tasks = []
+        cur = start
+        while cur <= end:
+            tasks.append(fetch_kuzyak_day(client, cur.year, cur.month, cur.day))
+            cur += timedelta(days=1)
+        for coro in asyncio.as_completed(tasks):
+            res = await coro
+            if res:
+                results.append(res)
+
+    results.sort(key=lambda x: x["date"])
+    return results
+
+
+async def get_ru_holidays(year: int) -> list[dict]:
+    cache_key = ("RU", year)
+    if cache_key in CALENDAR_CACHE:
+        return CALENDAR_CACHE[cache_key]
+
+    try:
+        holidays = await get_ru_holidays_from_kuzyak(year)
+        if holidays:
+            CALENDAR_CACHE[cache_key] = holidays
+            return holidays
+    except Exception:
+        pass
+
+    holidays = await get_nager_holidays("RU", year)
+    CALENDAR_CACHE[cache_key] = holidays
+    return holidays
 
 
 @app.get("/")
 async def index():
-    return FileResponse(os.path.join(STATIC_DIR, "index.html"))
+    return FileResponse(str(STATIC_DIR / "index.html"))
 
 
 @app.get("/api/countries")
 async def countries():
-    async with httpx.AsyncClient() as client:
-        try:
-            data = await fetch_json(client, f"{NAGER_BASE}/AvailableCountries")
-            return [{"code": c["countryCode"], "name": c["name"]} for c in data]
-        except HTTPException:
-            return FALLBACK_COUNTRIES
+    return SLAVIC_COUNTRIES
 
 
-@app.get("/api/holidays/{country_code}")
-async def holidays_by_year(country_code: str, year: int = Query(default=date.today().year)):
-    return await get_holidays_data(country_code, year)
+@app.get("/api/slavic/forward")
+async def slavic_forward(
+    country: str = Query(default="RU"),
+    days: int = Query(default=365, le=730),
+):
+    try:
+        start = date.today()
+        end = start + timedelta(days=days)
+        years = sorted({start.year, end.year})
+        result: list[dict] = []
 
+        cc = country.upper()
 
-@app.get("/api/holidays/{country_code}/{year}/{month}/{day}")
-async def holidays_by_date(country_code: str, year: int, month: int, day: int):
-    all_holidays = await get_holidays_data(country_code, year)
-    target = f"{year:04d}-{month:02d}-{day:02d}"
-    return [h for h in all_holidays if h.get("date") == target]
+        if cc == "RU":
+            for y in years:
+                result.extend(await get_ru_holidays(y))
+        else:
+            for y in years:
+                result.extend(await get_nager_holidays(cc, y))
 
+        folk = load_folk_holidays()
+        for h in folk:
+            try:
+                d = date.fromisoformat(h["date"])
+            except Exception:
+                continue
+            if start <= d <= end and (h.get("country", cc) == cc or h.get("country") == "ALL"):
+                result.append({
+                    "date": h["date"],
+                    "name": h.get("name"),
+                    "country": h.get("country", cc),
+                    "type": "folk",
+                    "source": "folk-json",
+                    "weekday": d.strftime("%A"),
+                })
 
-@app.get("/api/holidays/today/{country_code}")
-async def holidays_today(country_code: str):
-    today = date.today()
-    return await holidays_by_date(country_code, today.year, today.month, today.day)
+        for item in result:
+            if "weekday" not in item:
+                try:
+                    item["weekday"] = date.fromisoformat(item["date"]).strftime("%A")
+                except Exception:
+                    item["weekday"] = ""
+
+        seen = set()
+        unique = []
+        for item in sorted(result, key=lambda x: x["date"]):
+            key = (item["date"], item["name"])
+            if key not in seen:
+                seen.add(key)
+                unique.append(item)
+
+        final = [
+            item for item in unique
+            if start <= date.fromisoformat(item["date"]) <= end
+        ]
+        return final
+    except Exception as e:
+        return {"error": type(e).__name__ + ": " + str(e)}
 
 
 if __name__ == "__main__":
     import uvicorn
-
     uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))

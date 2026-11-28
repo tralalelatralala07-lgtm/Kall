@@ -1,131 +1,17 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-body {
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    padding: 20px;
-    color: #333;
-}
-.container {
-    max-width: 900px;
-    margin: 0 auto;
-    background: rgba(255, 255, 255, 0.96);
-    border-radius: 16px;
-    padding: 30px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-}
-header {
-    text-align: center;
-    margin-bottom: 30px;
-}
-header h1 {
-    font-size: 2rem;
-    margin-bottom: 8px;
-    color: #4a5568;
-}
-header p {
-    color: #718096;
-}
-.controls {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-bottom: 30px;
-}
-select,
-input[type="month"],
-button {
-    padding: 10px 14px;
-    border-radius: 8px;
-    border: 1px solid #cbd5e0;
-    font-size: 1rem;
-    background: #fff;
-}
-button {
-    cursor: pointer;
-    background: #4a5568;
-    color: #fff;
-    border: none;
-}
-button:hover {
-    background: #2d3748;
-}
-.calendar {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 6px;
-    text-align: center;
-}
-.calendar .weekday {
-    font-weight: bold;
-    color: #718096;
-    font-size: 0.9rem;
-    padding: 8px 0;
-}
-.calendar .day {
-    padding: 14px 4px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 0.95rem;
-    position: relative;
-}
-.calendar .day:hover {
-    background: #e2e8f0;
-}
-.calendar .day.today {
-    background: #667eea;
-    color: #fff;
-}
-.calendar .day.holiday {
-    background: #f6e05e;
-    color: #4a5568;
-    font-weight: bold;
-}
-.calendar .day.selected {
-    background: #48bb78;
-    color: #fff;
-}
-.holiday-badge {
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    font-size: 0.7rem;
-    background: #c53030;
-    color: #fff;
-    padding: 1px 4px;
-    border-radius: 4px;
-}
-.holiday-details {
-    margin-top: 30px;
-    padding: 20px;
-    background: #f7fafc;
-    border-radius: 12px;
-    border-left: 5px solid #4a5568;
-}
-.holiday-details h2 {
-    color: #2d3748;
-    margin-bottom: 12px;
-}
-.holiday-details li {
-    margin-bottom: 8px;
-    padding: 8px;
-    background: #fff;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-@media (max-width: 600px) {
-    .calendar .day {
-        padding: 10px 2px;
-        font-size: 0.8rem;
-    }
-    .controls {
-        flex-direction: column;
-        align-items: stretch;
-    }
-}
+﻿* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #6a5acd 0%, #483d8b 100%); min-height: 100vh; padding: 30px 20px; color: #333; }
+.container { max-width: 800px; margin: 0 auto; background: rgba(255,255,255,0.95); border-radius: 20px; padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+.header { text-align: center; margin-bottom: 25px; }
+.header h1 { font-size: 1.8rem; color: #4a4a4a; margin-bottom: 8px; }
+.header p { color: #777; }
+.controls { display: flex; gap: 12px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; }
+select, button { padding: 10px 14px; border-radius: 8px; border: 1px solid #cbd5e0; font-size: 1rem; background: #fff; }
+button { cursor: pointer; background: #6a5acd; color: #fff; border: none; }
+button:hover { background: #483d8b; }
+button:disabled { opacity: 0.6; cursor: not-allowed; }
+.info { margin-bottom: 15px; font-size: 0.95rem; color: #555; min-height: 1.2em; }
+.holiday-list { display: flex; flex-direction: column; gap: 8px; }
+.holiday-item { background: #fff; border-radius: 10px; padding: 14px 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); display: flex; justify-content: space-between; align-items: baseline; font-size: 1.05rem; }
+.date { font-weight: bold; color: #6a5acd; white-space: nowrap; }
+.name { color: #555; flex: 1; margin-left: 20px; }
+@media (max-width: 600px) { .controls { flex-direction: column; align-items: stretch; } .holiday-item { flex-direction: column; align-items: flex-start; } .date { display: block; white-space: normal; margin-bottom: 4px; } .name { margin-left: 0; } }
